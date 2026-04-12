@@ -3,13 +3,18 @@ package board;
 public abstract class Piece {
 
     protected Position position;
-    protected Board board;
+    private Board board;
 
     public Piece(Board board) {
         this.board = board;
-        this.position = null;
+        position = null;
     }
 
+    protected Board getBoard() {
+        return board;
+    }
+
+    // Cada peça define seus movimentos
     public abstract boolean[][] possibleMoves();
 
     public boolean possibleMove(Position position) {
@@ -17,16 +22,15 @@ public abstract class Piece {
     }
 
     public boolean isThereAnyPossibleMove() {
-        boolean[][] moves = possibleMoves();
+        boolean[][] mat = possibleMoves();
 
-        for (int i = 0; i < moves.length; i++) {
-            for (int j = 0; j < moves[i].length; j++) {
-                if (moves[i][j]) {
+        for (int i = 0; i < mat.length; i++) {
+            for (int j = 0; j < mat[i].length; j++) {
+                if (mat[i][j]) {
                     return true;
                 }
             }
         }
-
         return false;
     }
 }
