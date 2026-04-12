@@ -80,6 +80,7 @@ classDiagram
         +possibleMoves(ChessPosition sourcePosition) boolean[][]
         +performChessMove(ChessPosition source, ChessPosition target) ChessPiece
         +replacePromotedPiece(String type) ChessPiece
+        +performChessMove(source, target)
     }
 
     class ChessPosition {
@@ -136,9 +137,51 @@ classDiagram
     }
 
     %% =========================
+    %% REGISTRO DE XADREZ
+    %% =========================
+
+    class ChessLog {
+        -List<Move> moves
+        +addMove(Move move)
+        +getMoves() List~Move~
+        +getFullHistory() List~String~
+        +toPgn(String, String, String, String, String) String
+    }
+
+    class Move {
+        -ChessPiece piece
+        -Position source
+        -Position target
+        -ChessPiece capturedPiece
+        -ChessPiece promotedPiece
+        -String sanAnnotation
+        -boolean castlingKingSide
+        -boolean castlingQueenSide
+        -boolean enPassant
+        -boolean check
+        -boolean checkmate
+        +getSanAnnotation() String
+    }
+
+    class SanGenerator {
+        <<Utility>>
+        +generateSan(match, movedPiece, source, target, ...) String
+        -appendCheckSuffix(String, boolean, boolean) String
+        -pieceLetter(ChessPiece) String
+        -toSquare(Position) String
+        -disambiguation(...) String
+    }
+
+    %% =========================
     %% HERANÇA
     %% =========================
 
+    ChessMatch ..> SanGenerator : utiliza para criar string
+    ChessMatch --> ChessLog : registra lances
+    ChessLog "1" *-- "many" Move : armazena
+    Move --> "1" Position : source/target
+    Move --> "1" ChessPiece : piece/captured
+    
     ChessPiece --|> Piece
     King --|> ChessPiece
     Queen --|> ChessPiece

@@ -1,0 +1,78 @@
+.root-pane {
+    -fx-background-color: linear-gradient(to bottom, #111315, #1a1d21);
+}
+
+/* Área do tabuleiro */
+.board-grid {
+    -fx-background-color: #101214;
+    -fx-background-radius: 14;
+    -fx-padding: 18;
+    -fx-alignment: center;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 22, 0.2, 0, 8);
+}
+
+/* Painel lateral */
+.side-panel {
+    -fx-background-color: #1b1f24;
+    -fx-background-radius: 14;
+    -fx-min-width: 280;
+    -fx-pref-width: 280;
+}
+
+/* Título */
+.title-label {
+    -fx-text-fill: #f5f7fa;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+/* Rótulos */
+.info-label {
+    -fx-text-fill: #c9d1d9;
+    -fx-font-size: 14px;
+    -fx-background-color: #252b31;
+    -fx-background-radius: 10;
+    -fx-padding: 10 12 10 12;
+}
+
+/* Botões */
+.action-button {
+    -fx-background-color: linear-gradient(to bottom, #4f8cff, #3f74d8);
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+    -fx-padding: 10 18 10 18;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.22), 10, 0.15, 0, 3);
+}
+
+.action-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #6a9dff, #4d82e6);
+}
+
+.action-button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #3568c7, #2d58ab);
+}
+
+/* Casas do tabuleiro */
+.square-light {
+    -fx-background-color: #f0d9b5;
+}
+
+.square-dark {
+    -fx-background-color: #b58863;
+}
+
+/* Destaques futuros */
+.square-selected {
+    -fx-background-color: #d7c56d;
+}
+
+.square-possible-move {
+    -fx-background-color: #8fbf7a;
+}
+
+.square-capture-move {
+    -fx-background-color: #c96b6b;
+}
