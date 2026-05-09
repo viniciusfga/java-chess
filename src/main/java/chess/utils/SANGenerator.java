@@ -1,8 +1,8 @@
 package chess.utils;
 
 import board.Position;
-import chess.ChessMatch;
-import chess.ChessPiece;
+import chess.core.ChessMatch;
+import chess.core.ChessPiece;
 import chess.history.Move;
 import chess.pieces.Bishop;
 import chess.pieces.King;

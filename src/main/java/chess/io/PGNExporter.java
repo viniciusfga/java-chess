@@ -1,5 +1,6 @@
-package chess;
+package chess.io;
 
+import chess.core.ChessMatch;
 import chess.history.Move;
 
 import java.time.LocalDate;

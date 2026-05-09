@@ -2,8 +2,8 @@ package chess.pieces;
 
 import board.Board;
 import board.Position;
-import chess.ChessPiece;
-import chess.Color;
+import chess.core.ChessPiece;
+import chess.core.Color;
 
 public class Queen extends ChessPiece {
 

@@ -1,6 +1,6 @@
 package gui;
 
-import chess.ChessPiece;
+import chess.core.ChessPiece;
 import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;

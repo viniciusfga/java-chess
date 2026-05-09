@@ -2,9 +2,9 @@ package chess.pieces;
 
 import board.Board;
 import board.Position;
-import chess.ChessMatch;
-import chess.ChessPiece;
-import chess.Color;
+import chess.core.ChessMatch;
+import chess.core.ChessPiece;
+import chess.core.Color;
 
 public class King extends ChessPiece {
 

@@ -2,7 +2,7 @@ package chess.history;
 
 import board.Piece;
 import board.Position;
-import chess.ChessPiece;
+import chess.core.ChessPiece;
 
 public class Move {
 

@@ -1,7 +1,6 @@
 package gui;
 
-import chess.Color;
-import chess.ChessPiece;
+import chess.core.ChessPiece;
 import chess.pieces.*;
 import javafx.scene.image.Image;
 

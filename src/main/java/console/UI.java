@@ -1,6 +1,9 @@
 package console;
 
-import chess.*;
+import chess.core.ChessMatch;
+import chess.core.ChessPiece;
+import chess.core.ChessPosition;
+import chess.core.Color;
 import chess.history.ChessLog;
 import chess.history.Move;
 

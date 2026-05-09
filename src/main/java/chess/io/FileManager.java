@@ -1,4 +1,4 @@
-package chess;
+package chess.io;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

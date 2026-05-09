@@ -1,5 +1,7 @@
-package chess;
+package chess.io;
 
+import chess.core.ChessMatch;
+import chess.core.ChessPosition;
 import chess.history.Move;
 import console.UI;
 

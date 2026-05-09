@@ -2,13 +2,16 @@ package gui;
 
 import board.Position;
 import chess.ChessException;
-import chess.ChessMatch;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.core.ChessMatch;
+import chess.core.ChessPiece;
+import chess.core.ChessPosition;
 import javafx.fxml.FXML;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+
+import java.util.*;
 
 public class GameController {
 
@@ -80,6 +83,26 @@ public class GameController {
         }
     }
 
+    private String askPromotionPiece() {
+        Map<String, String> piecesMap = new LinkedHashMap<>();
+        piecesMap.put("Rainha", "Q");
+        piecesMap.put("Torre", "R");
+        piecesMap.put("Bispo", "B");
+        piecesMap.put("Cavalo", "N");
+
+        List<String> choices = new ArrayList<>(piecesMap.keySet());
+
+        ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0), choices);
+        dialog.setTitle("Promoção de Peão");
+        dialog.setHeaderText("Seu peão alcançou a última fileira!");
+        dialog.setContentText("Escolha a peça para promoção:");
+
+        Optional<String> result = dialog.showAndWait();
+
+        // 4. Retorno mapeado para o padrão do motor de xadrez
+        return result.map(piecesMap::get).orElse("Q");
+    }
+
     private void handleSquareClick(int row, int col) {
         Position clickedPosition = new Position(row, col);
 
@@ -111,6 +134,12 @@ public class GameController {
                 ChessPosition target = ChessPosition.fromPosition(clickedPosition);
 
                 chessMatch.performChessMove(source, target);
+
+                if (chessMatch.getPromoted() != null) {
+                    String choice = askPromotionPiece();
+
+                    chessMatch.replacePromotedPiece(choice);
+                }
 
                 clearSelection();
                 updateUI();
@@ -163,14 +192,22 @@ public class GameController {
 
     @FXML
     public void onUndoAction() {
-        // Lógica de desfazer aqui
+
+        chessMatch.undoLastMove();
+
+        clearSelection();
+
         drawBoard();
         updateUI();
     }
 
     @FXML
     public void onRedoAction() {
-        // Lógica de refazer aqui
+
+        chessMatch.redoMove();
+
+        clearSelection();
+
         drawBoard();
         updateUI();
     }
