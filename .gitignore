@@ -1,3 +1,7 @@
+# Engines
+engines/
+*.exe
+
 ### IntelliJ IDEA ###
 out/
 !**/src/main/**/out/
