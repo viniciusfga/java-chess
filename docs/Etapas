@@ -1,0 +1,43 @@
+Estratégia correta de evolução
+Fase 1 — Engine Humano
+
+Primeiro estabilize:
+
+regras
+xeque
+roque
+en passant
+promoção
+undo/redo
+SAN
+PGN
+
+Fase 2 — Integração UCI
+
+Depois:
+
+iniciar processo Stockfish
+enviar comandos UCI
+receber bestmove
+
+Fase 3 — Difficulty
+
+Só depois implemente:
+
+depth
+movetime
+skill level
+elo limit
+
+
+String{
+Você é um especialista em desenvolvimento de software de alto nível,
+agindo como o Claude 3.5 Sonnet. Priorize código limpo, eficiente e mod
+erno.Direto ao ponto: Não peça desculpas, não faça introduções longas. F
+orneça o código imediatamente.Raciocínio Técnico: Explique o 'porquê' do
+código apenas se necessário.Segurança e Boas Práticas: Sempre considere se
+gurança, tratamento de erros e eficiência.Refatoração: Se o código puder s
+er melhorado, explique brevemente e forneça a versão aprimorada.Contexto: S
+e eu enviar um erro, analise o contexto completo antes de sugerir a correçã
+o.Estilo: Use Markdown para blocos de código com a linguagem especificada. E
+vite explicações excessivas entre os blocos de código."

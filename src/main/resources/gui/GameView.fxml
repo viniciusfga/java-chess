@@ -10,11 +10,16 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import java.net.URL?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="gui.controller.GameController"
             prefWidth="900"
             prefHeight="700"
             styleClass="root-pane">
+
+    <stylesheets>
+        <URL value="@/gui/theme.css" />
+    </stylesheets>
 
     <center>
         <HBox alignment="CENTER" BorderPane.alignment="CENTER">
@@ -27,6 +32,18 @@
 
     <right>
         <VBox spacing="20" styleClass="side-panel">
+
+            <VBox spacing="10" styleClass="timer-container">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Brancas:" styleClass="timer-name-label"/>
+                    <Label fx:id="whiteTimeLabel" text="10:00" styleClass="timer-value-label"/>
+                </HBox>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Pretas: " styleClass="timer-name-label"/>
+                    <Label fx:id="blackTimeLabel" text="10:00" styleClass="timer-value-label"/>
+                </HBox>
+            </VBox>
+
             <padding>
                 <Insets top="20" right="16" bottom="20" left="16"/>
             </padding>

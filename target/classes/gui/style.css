@@ -181,3 +181,21 @@
 .square-check {
     -fx-background-color: #d9534f;
 }
+
+.timer-container {
+    -fx-background-color: #2a2e37;
+    -fx-padding: 10;
+    -fx-background-radius: 5;
+}
+
+.timer-value-label {
+    -fx-font-family: "Monospaced"; /* Fonte fixa evita que os números "pulem" */
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #f0f0f0;
+}
+
+.timer-name-label {
+    -fx-text-fill: #aaaaaa;
+    -fx-font-size: 12px;
+}

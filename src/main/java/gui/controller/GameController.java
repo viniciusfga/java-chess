@@ -4,12 +4,17 @@ import board.Position;
 import chess.ChessException;
 import chess.ai.BotEngine;
 import chess.ai.StockfishEngine;
+import chess.ai.UCIMapper;
 import chess.core.ChessMatch;
 import chess.core.ChessPiece;
 import chess.core.ChessPosition;
 import chess.game.GameConfig;
+import chess.game.GameManager;
+import chess.game.GameSession;
+import chess.game.GameState;
 import chess.history.Move;
 import gui.ChessBoardView;
+import gui.audio.SoundManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -34,6 +39,9 @@ public class GameController {
     private static final String COORD_STYLE = "-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: white;";
 
     // --- FXML Elements ---
+    @FXML private Label whiteTimeLabel;
+    @FXML private Label blackTimeLabel;
+
     @FXML private GridPane boardGrid;
     @FXML private Label turnLabel;
     @FXML private Label statusLabel;
@@ -43,41 +51,89 @@ public class GameController {
     private ChessMatch chessMatch;
     private ChessBoardView chessBoardView;
     private GameConfig gameConfig;
-    private BotEngine botEngine;
+    private GameSession session;
+    private GameManager gameManager;
+    private javafx.animation.Timeline gameClock;
+        private BotEngine botEngine;
+        private boolean botUnavailable;
 
-    private Position sourcePosition;
-    private boolean[][] possibleMoves;
+        private Position sourcePosition;
+        private boolean[][] possibleMoves;
 
     // --- Lifecycle & Initialization ---
 
     @FXML
     public void initialize() {
-        // Inicialização básica de componentes visuais
         chessBoardView = new ChessBoardView();
-
-        // Se o setup() não for chamado externamente, inicia com config padrão
-        if (gameConfig == null) {
-            setup(GameConfig.defaultPvP());
-        }
     }
 
     /**
      * Ponto de entrada para configurar a partida vindo da tela de Setup.
      */
+
+    private boolean isSoundEnabled() {
+        return gameConfig != null
+                && gameConfig.isSoundEnabled();
+    }
+
+    private void playMoveSound(boolean wasCapture, boolean wasPromotion) {
+        if (!isSoundEnabled()) {
+            return;
+        }
+
+        if (chessMatch.getCheckMate()) {
+            SoundManager.playCheckmate();
+        } else if (chessMatch.getCheck()) {
+            SoundManager.playCheck();
+        } else if (wasPromotion) {
+            SoundManager.playPromote();
+        } else if (wasCapture) {
+            SoundManager.playCapture();
+        } else {
+            SoundManager.playMove();
+        }
+    }
+
     public void setup(GameConfig config) {
         this.gameConfig = config;
-        this.chessMatch = new ChessMatch();
+
+        // 1. Criar o motor (IA)
+        BotEngine engine = createBotEngine(config);
+        this.botEngine = engine;
+
+        // 2. Criar o Manager (Ele já recebe o motor)
+        this.gameManager = new GameManager(config, engine);
+
+        // 3. Criar a Session
+        this.session = new GameSession(gameManager, config);
+
+        // 4. Sincronizar o ChessMatch (Essencial para a UI e o Bot verem o mesmo jogo)
+        this.chessMatch = gameManager.getMatch();
+
         this.sourcePosition = null;
         this.possibleMoves = null;
 
-        if (gameConfig.getMode().hasAiPlayer()) {
-            startBotEngine();
+        // 5. Iniciar lógica e Relógio
+        this.session.start();
+        startClockTask(); // Agora o tempo vai começar a contar
+
+        // 6. Iniciar o processo externo do Stockfish
+        if (engine != null) {
+            try {
+                engine.start(); // Inicia o .exe
+                LOG.info("Stockfish pronto para uso.");
+            } catch (IOException e) {
+                botUnavailable = true;
+                LOG.severe("Falha crítica no Stockfish: " + e.getMessage());
+                statusLabel.setText("IA indisponível: " + e.getMessage());
+            }
         }
 
-        drawBoard();
+        drawBoard(); // Garante que o tabuleiro apareça
         updateUI();
         updateMoveHistory();
 
+        // 7. Verifica se o Bot começa jogando (ex: modo EvE ou Bot de Brancas)
         checkInitialBotMove();
     }
 
@@ -135,9 +191,10 @@ public class GameController {
     // --- Input Handling ---
 
     private void handleSquareClick(int row, int col) {
-        // Bloqueia clique se for a vez do Bot
-        if (gameConfig != null && gameConfig.isBotTurn(chessMatch.getCurrentPlayer())) {
-            statusLabel.setText("Aguarde o lance da IA...");
+        // 1. Verifica se o estado atual permite interação humana
+        // Impede cliques se o jogo acabou, está pausado ou se o Bot está pensando
+        if (session != null && !session.getCurrentState().canPlayerMove()) {
+            statusLabel.setText(session.getCurrentState().getStatusMessage());
             return;
         }
 
@@ -164,28 +221,52 @@ public class GameController {
 
     private void handleSelection(Position pos) {
         ChessPiece piece = chessMatch.getPieces()[pos.getRow()][pos.getColumn()];
-        if (piece != null) {
-            sourcePosition = pos;
-            possibleMoves = chessMatch.possibleMoves(ChessPosition.fromPosition(pos));
-            statusLabel.setText("Selecionado: " + getFriendlyPieceName(piece) + " em " + ChessPosition.fromPosition(pos));
+
+        if (piece == null) {
+            return;
         }
+
+        if (piece.getColor() != chessMatch.getCurrentPlayer()) {
+            statusLabel.setText("Essa peça não é do jogador atual.");
+            return;
+        }
+
+        sourcePosition = pos;
+        possibleMoves = chessMatch.possibleMoves(ChessPosition.fromPosition(pos));
+        statusLabel.setText("Selecionado: " + getFriendlyPieceName(piece) + " em " + ChessPosition.fromPosition(pos));
     }
 
     private void executeMove(Position targetPos) {
         ChessPosition source = ChessPosition.fromPosition(sourcePosition);
         ChessPosition target = ChessPosition.fromPosition(targetPos);
 
+        boolean wasCapture = chessMatch.getPieces()[targetPos.getRow()][targetPos.getColumn()] != null;
+
         chessMatch.performChessMove(source, target);
 
-        if (chessMatch.getPromoted() != null) {
+        boolean wasPromotion = chessMatch.getPromoted() != null;
+
+        if (wasPromotion) {
             handlePromotion();
         }
 
+        playMoveSound(wasCapture, wasPromotion);
+
+        session.updateClock();
         clearSelection();
         updateUI();
 
-        if (!chessMatch.getCheckMate() && gameConfig.isBotTurn(chessMatch.getCurrentPlayer())) {
+        // 3. Verifica se o jogo acabou ou se é a vez do Bot
+        if (chessMatch.getCheckMate()) {
+            session.setCurrentState(GameState.CHECKMATE);
+            statusLabel.setText("Fim de jogo: Xeque-mate!");
+        } else if (gameConfig.isBotTurn(chessMatch.getCurrentPlayer())) {
+            // Altera o estado para bloquear a UI enquanto a IA processa
+            session.setCurrentState(GameState.BOT_THINKING);
+            statusLabel.setText("IA está calculando...");
             scheduleBotMove();
+        } else {
+            session.setCurrentState(chessMatch.getCheck() ? GameState.CHECK : GameState.RUNNING);
         }
     }
 
@@ -199,44 +280,109 @@ public class GameController {
 
     // --- AI Logic (Stockfish) ---
 
+    private BotEngine createBotEngine(GameConfig config) {
+        // Se o modo for PvP, não precisamos de motor de IA
+        if (!config.getMode().hasAiPlayer()) return null; // Retorna nulo se for PvP
+
+        // Se o usuário especificou um caminho para o Stockfish, usamos ele.
+        // Caso contrário, usamos o construtor padrão que busca no PATH do sistema.
+        String path = config.getStockfishPath();
+
+        if (path != null && !path.isBlank()) {
+            return new StockfishEngine(path);
+        } else {
+            return new StockfishEngine();
+        }
+    }
+
     private void startBotEngine() {
-        String path = gameConfig.getStockfishPath();
-        botEngine = (path != null) ? new StockfishEngine(path) : new StockfishEngine();
         try {
-            botEngine.start();
-            LOG.info("BotEngine iniciado com sucesso.");
+            // gameManager.getBotEngine() retorna a instância criada no setup
+            BotEngine bot = gameManager.getBotEngine();
+            if (bot != null) {
+                bot.start(); // Inicia o processo e o handshake UCI
+                LOG.info("Stockfish iniciado com sucesso.");
+            }
         } catch (IOException e) {
-            LOG.severe("Falha ao iniciar motor: " + e.getMessage());
-            statusLabel.setText("IA indisponível.");
+            LOG.severe("Erro ao iniciar Stockfish: " + e.getMessage());
+            statusLabel.setText("Erro: IA não pôde ser iniciada.");
+            // Opcional: Reverter para modo PvP ou exibir alerta
         }
     }
 
     private void scheduleBotMove() {
-        if (botEngine == null || !botEngine.isReady()) return;
+        if (botEngine == null) {
+            statusLabel.setText("IA não configurada.");
+            return;
+        }
 
+        if (!botEngine.isReady()) {
+            statusLabel.setText("IA indisponível: Stockfish não está pronto.");
+            session.setCurrentState(GameState.RUNNING);
+            return;
+        }
+
+        // Roda em uma Thread separada para não travar o JavaFX
         new Thread(() -> {
-            botEngine.setPosition("startpos", buildMoveHistory());
-            Optional<String> uciMove = botEngine.getBestMove(gameConfig.getDifficulty(), chessMatch.getCurrentPlayer());
+            try {
+                // Envia a posição inicial + todos os lances feitos até agora
+                botEngine.setPosition("startpos", buildMoveHistory());
 
-            Platform.runLater(() -> uciMove.ifPresentOrElse(this::applyBotMove,
-                    () -> statusLabel.setText("Bot falhou em calcular.")));
+                // Pede o melhor lance para a dificuldade configurada
+                Optional<String> uciMove = botEngine.getBestMove(
+                        gameConfig.getDifficulty(),
+                        chessMatch.getCurrentPlayer()
+                );
+
+                // Volta para a Thread da UI para aplicar o lance
+                Platform.runLater(() -> {
+                    uciMove.ifPresentOrElse(
+                            this::applyBotMove,
+                            () -> {
+                                statusLabel.setText("Erro: IA não retornou um lance.");
+                                session.setCurrentState(GameState.RUNNING);
+                            }
+                    );
+                });
+            } catch (Exception e) {
+                LOG.severe("Falha na Thread do Bot: " + e.getMessage());
+                Platform.runLater(() -> {
+                    statusLabel.setText("Erro ao processar lance da IA.");
+                    session.setCurrentState(GameState.RUNNING);
+                });
+            }
         }, "BotThread").start();
     }
 
     private void applyBotMove(String uciMove) {
         try {
-            // Conversão UCI (ex: e2e4) para coordenadas de matriz
-            int fC = uciMove.charAt(0) - 'a';
-            int fR = 8 - Character.getNumericValue(uciMove.charAt(1));
-            int tC = uciMove.charAt(2) - 'a';
-            int tR = 8 - Character.getNumericValue(uciMove.charAt(3));
+            // Uso da sua nova classe utilitária
+            ChessPosition source = UCIMapper.source(uciMove);
+            ChessPosition target = UCIMapper.target(uciMove);
 
-            chessMatch.performChessMove(ChessPosition.fromPosition(new Position(fR, fC)),
-                    ChessPosition.fromPosition(new Position(tR, tC)));
+            Position targetPosition = target.toPosition();
+            boolean wasCapture = chessMatch.getPieces()[targetPosition.getRow()][targetPosition.getColumn()] != null;
 
+            // Execução direta no ChessMatch
+            chessMatch.performChessMove(source, target);
+
+            boolean wasPromotion = chessMatch.getPromoted() != null;
+
+            // Lógica de promoção (se o quinto caractere existir, ex: "e7e8q")
             if (chessMatch.getPromoted() != null) {
-                String p = uciMove.length() == 5 ? String.valueOf(uciMove.charAt(4)).toUpperCase() : "Q";
-                chessMatch.replacePromotedPiece(p);
+                String piece = uciMove.length() == 5
+                        ? String.valueOf(uciMove.charAt(4)).toUpperCase()
+                        : "Q";
+                chessMatch.replacePromotedPiece(piece);
+            }
+
+            playMoveSound(wasCapture, wasPromotion);
+
+            if (chessMatch.getCheckMate()) {
+                session.setCurrentState(GameState.CHECKMATE);
+                statusLabel.setText("Fim de jogo: Xeque-mate!");
+            } else {
+                session.setCurrentState(chessMatch.getCheck() ? GameState.CHECK : GameState.RUNNING);
             }
 
             drawBoard();
@@ -244,10 +390,51 @@ public class GameController {
             updateMoveHistory();
 
             if (!chessMatch.getCheckMate() && gameConfig.isBotTurn(chessMatch.getCurrentPlayer())) {
+                session.setCurrentState(GameState.BOT_THINKING);
+                statusLabel.setText("IA está calculando...");
                 scheduleBotMove();
             }
         } catch (Exception e) {
-            LOG.warning("Erro ao aplicar lance do Bot: " + e.getMessage());
+            LOG.warning("Erro ao mapear lance do Bot: " + e.getMessage());
+            session.setCurrentState(GameState.RUNNING);
+        }
+    }
+
+    // --- Timeline
+
+    private void startClockTask() {
+        // Timeline executa um bloco de código periodicamente
+        gameClock = new javafx.animation.Timeline(
+                new javafx.animation.KeyFrame(javafx.util.Duration.seconds(1), e -> {
+                    // Só atualiza se a sessão existir e o jogo estiver rodando
+                    if (session != null && session.getCurrentState() == GameState.RUNNING) {
+                        session.updateClock();
+                        updateTimerUI(); // Método para dar setText nas Labels
+                    }
+                })
+        );
+        gameClock.setCycleCount(javafx.animation.Animation.INDEFINITE);
+        gameClock.play();
+    }
+
+    private void updateTimerUI() {
+        whiteTimeLabel.setText(session.getFormattedWhiteTime());
+        blackTimeLabel.setText(session.getFormattedBlackTime());
+
+        if (session.getCurrentState() == GameState.TIMEOUT) {
+            statusLabel.setText("FIM DE TEMPO!");
+        }
+    }
+
+    private void updateTimerLabels() {
+        // Exemplo: assumindo que você tenha labels para os tempos
+        // whiteTimeLabel.setText(session.getFormattedWhiteTime());
+        // blackTimeLabel.setText(session.getFormattedBlackTime());
+
+        // Se o tempo acabar, a session muda o estado internamente e você reflete aqui
+        if (session.getCurrentState() == GameState.TIMEOUT) {
+            statusLabel.setText("FIM DE TEMPO!");
+            drawBoard(); // Trava o tabuleiro
         }
     }
 
@@ -255,9 +442,16 @@ public class GameController {
 
     private void updateUI() {
         turnLabel.setText(chessMatch.getCurrentPlayer().toString());
-        if (chessMatch.getCheckMate()) statusLabel.setText("XEQUE-MATE!");
-        else if (chessMatch.getCheck()) statusLabel.setText("XEQUE!");
-        else statusLabel.setText("Partida em andamento");
+
+        if (botUnavailable) {
+            statusLabel.setText("IA indisponível. Verifique o caminho do Stockfish.");
+        } else if (chessMatch.getCheckMate()) {
+            statusLabel.setText("XEQUE-MATE!");
+        } else if (chessMatch.getCheck()) {
+            statusLabel.setText("XEQUE!");
+        } else {
+            statusLabel.setText("Partida em andamento");
+        }
     }
 
     private void updateMoveHistory() {

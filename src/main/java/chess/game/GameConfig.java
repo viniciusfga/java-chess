@@ -53,6 +53,7 @@ public final class GameConfig {
      * 0 = sem relógio (partida livre).
      */
     private final int totalTimeSeconds;
+    private final int timeControlMinutes;
 
     /**
      * Incremento por lance em segundos (Fischer).
@@ -81,6 +82,8 @@ public final class GameConfig {
         this.allowUndo        = b.allowUndo;
         this.showLegalMoves   = b.showLegalMoves;
         this.soundEnabled     = b.soundEnabled;
+
+        this.timeControlMinutes = (b.totalTimeSeconds > 0) ? (b.totalTimeSeconds / 60) : b.timeControlMinutes;
     }
 
     // ── Getters ──────────────────────────────────────────────────────────────
@@ -94,6 +97,10 @@ public final class GameConfig {
     public boolean       isAllowUndo()         { return allowUndo;        }
     public boolean       isShowLegalMoves()    { return showLegalMoves;   }
     public boolean       isSoundEnabled()      { return soundEnabled;     }
+    public int getTimeControlMinutes() {
+        return timeControlMinutes;
+    }
+
 
     // ── Conveniências ────────────────────────────────────────────────────────
 
@@ -170,8 +177,9 @@ public final class GameConfig {
         private GameMode      mode             = GameMode.PVP;
         private Color         humanColor       = Color.WHITE;
         private BotDifficulty difficulty       = BotDifficulty.MEDIUM;
-        private String        stockfishPath    = null;   // busca no PATH
+        private String        stockfishPath    = "engines/stockfish.exe";
         private int           totalTimeSeconds = 0;      // sem relógio
+        private int           timeControlMinutes = 10;
         private int           incrementSeconds = 0;
         private boolean       allowUndo        = true;
         private boolean       showLegalMoves   = true;
@@ -238,6 +246,12 @@ public final class GameConfig {
 
         public Builder soundEnabled(boolean enabled) {
             this.soundEnabled = enabled;
+            return this;
+        }
+
+        public Builder timeControlMinutes(int minutes) {
+            this.timeControlMinutes = minutes;
+            this.totalTimeSeconds = minutes * 60; // Sincroniza segundos
             return this;
         }
 

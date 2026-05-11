@@ -103,6 +103,7 @@ public class GameSetupController {
         soundCheck.setSelected(true);
         minutesField.setText("10");
         incrementField.setText("0");
+        stockfishPathField.setText("engines/stockfish.exe");
     }
 
     private void bindVisibility() {

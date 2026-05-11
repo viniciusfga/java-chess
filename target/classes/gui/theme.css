@@ -1,0 +1,82 @@
+/* Fundo principal da janela */
+.root-pane {
+    -fx-background-color: #121212;
+}
+
+/* Painel lateral direito */
+.side-panel {
+    -fx-background-color: #1a1b1e;
+    -fx-border-color: transparent transparent transparent #2c2c2c; /* Linha sutil separando o tabuleiro */
+    -fx-border-width: 1px;
+}
+
+/* Labels de nome e timers */
+.timer-name-label, .title-label, .turn-key-label, .section-header {
+    -fx-text-fill: #b0b0b0;
+    -fx-font-weight: bold;
+}
+
+.timer-value-label {
+    -fx-text-fill: #ffffff;
+    -fx-font-family: "Consolas", monospace;
+}
+
+/* Título principal */
+.title-label {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 18px;
+}
+
+/* Separador horizontal */
+.separator .line {
+    -fx-border-color: #333333;
+}
+
+/* Badge de Status (Partida em andamento) */
+.status-badge {
+    -fx-background-color: #2c2c2c;
+    -fx-text-fill: #a0a0a0;
+    -fx-padding: 5 10;
+    -fx-background-radius: 5;
+}
+
+/* Lista de Histórico (O ponto principal) */
+.move-list {
+    -fx-background-color: #121212;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #2c2c2c;
+    -fx-control-inner-background: #121212; /* Fundo interno */
+}
+
+/* Itens dentro da lista */
+.move-list .list-cell {
+    -fx-text-fill: #e0e0e0;
+    -fx-background-color: transparent;
+}
+
+.move-list .list-cell:selected {
+    -fx-background-color: #3a7afe;
+    -fx-text-fill: white;
+}
+
+/* Botões Undo e Redo (Estilo da imagem 1) */
+.action-button {
+    -fx-background-color: #3a7afe;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+
+.action-button:hover {
+    -fx-background-color: #5193fe;
+}
+
+/* Tabuleiro (opcional: ajustar o grid) */
+.board-grid {
+    -fx-background-color: #1a1b1e;
+    -fx-padding: 5;
+    -fx-background-radius: 5;
+}

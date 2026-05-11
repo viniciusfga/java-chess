@@ -23,6 +23,7 @@ src/
     │   │   │   ├── BotEngine.java          # Interface para futuras IAs
     │   │   │   ├── BotDifficulty.java      # Mapeamento de Elo/Params UCI
     │   │   │   ├── StockfishEngine.java    # Gerencia o Processo Stockfish
+    │   │   │   ├── UCIMpapper.java    
     │   │   │   └── UCIProtocol.java        # Parser de strings para o padrão UCI
     │   │   ├── core/                       # Cérebro do Jogo
     │   │   │   ├── ChessMatch.java
@@ -32,13 +33,18 @@ src/
     │   │   ├── engine/                     # Regras de execução e validação
     │   │   ├── game/                       # Regras de Sessão
     │   │   │   ├── GameConfig              
-    │   │   │   ├── GameManager.java   
+    │   │   │   ├── GameManager.java 
+    │   │   │   ├── GameMode.java   
     │   │   │   ├── GameSession.java           
     │   │   │   └── GameState.java
     │   │   │       
     │   │   ├── history/                    # ChessLog e classes de Move
     │   │   ├── pieces/                     # Implementação de cada peça
     │   │   ├── io/                         # PGN, FileManagers
+    │   │   ├── service/  
+    │   │   │   ├── EngineGameService              
+    │   │   │   └── MoveHistorySerializer.java 
+    │   │   │   
     │   │   └── utils/                      # SANGenerator
     │   │
     │   └── gui/                            # Camada Visual (JavaFX)

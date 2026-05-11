@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="gui.controller.GameSetupController"
+      spacing="15" alignment="TOP_CENTER"
+      prefWidth="450" prefHeight="550"
+      style="-fx-background-color: #1e1e1e; -fx-text-fill: white;">
+
+    <padding>
+        <Insets top="25" right="35" bottom="25" left="35"/>
+    </padding>
+
+    <Label text="CONFIGURAÇÃO DE PARTIDA"
+           style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+
+    <VBox spacing="12" VBox.vgrow="ALWAYS">
+
+        <VBox spacing="5">
+            <Label text="Modo de Jogo" style="-fx-text-fill: #888;"/>
+            <HBox spacing="15">
+                <fx:define>
+                    <ToggleGroup fx:id="modeGroup"/>
+                </fx:define>
+                <RadioButton fx:id="pvpRadio" text="PvP" toggleGroup="$modeGroup" selected="true"
+                             style="-fx-text-fill: white;"/>
+                <RadioButton fx:id="pveRadio" text="PvE (IA)" toggleGroup="$modeGroup" style="-fx-text-fill: white;"/>
+                <RadioButton fx:id="eveRadio" text="EvE (Bots)" toggleGroup="$modeGroup" style="-fx-text-fill: white;"/>
+            </HBox>
+        </VBox>
+
+        <VBox fx:id="colorBox" spacing="5">
+            <Label text="Sua Cor" style="-fx-text-fill: #888;"/>
+            <HBox spacing="15">
+                <fx:define>
+                    <ToggleGroup fx:id="colorGroup"/>
+                </fx:define>
+                <RadioButton fx:id="whiteRadio" text="Brancas" toggleGroup="$colorGroup" selected="true"
+                             style="-fx-text-fill: white;"/>
+                <RadioButton fx:id="blackRadio" text="Pretas" toggleGroup="$colorGroup" style="-fx-text-fill: white;"/>
+            </HBox>
+        </VBox>
+
+        <VBox fx:id="difficultyBox" spacing="5">
+            <Label text="Dificuldade da IA" style="-fx-text-fill: #888;"/>
+            <ComboBox fx:id="difficultyCombo" maxWidth="Infinity"/>
+            <Label fx:id="difficultyDescLabel" wrapText="true" style="-fx-font-size: 10px; -fx-text-fill: #666;"/>
+        </VBox>
+
+        <VBox spacing="5">
+            <Label text="Executável Stockfish" style="-fx-text-fill: #888;"/>
+            <HBox spacing="5">
+                <TextField fx:id="stockfishPathField" HBox.hgrow="ALWAYS" promptText="engines/stockfish.exe"
+                           style="-fx-background-color: #2b2b2b; -fx-text-fill: white;"/>
+                <Button text="..." onAction="#onBrowseStockfish"
+                        style="-fx-background-color: #444; -fx-text-fill: white;"/>
+            </HBox>
+        </VBox>
+
+        <VBox spacing="8">
+            <CheckBox fx:id="timedGameCheck" text="Habilitar Relógio" style="-fx-text-fill: white;"/>
+            <VBox fx:id="timeControlBox" spacing="5" style="-fx-padding: 0 0 0 20;">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Minutos:" style="-fx-text-fill: white;"/>
+                    <TextField fx:id="minutesField" prefWidth="50" text="10"/>
+                    <Label text="Inc (s):" style="-fx-text-fill: white;"/>
+                    <TextField fx:id="incrementField" prefWidth="50" text="0"/>
+                </HBox>
+            </VBox>
+        </VBox>
+
+        <VBox spacing="5">
+            <CheckBox fx:id="allowUndoCheck" text="Permitir Desfazer" selected="true" style="-fx-text-fill: white;"/>
+            <CheckBox fx:id="showLegalMovesCheck" text="Mostrar Movimentos Legais" selected="true"
+                      style="-fx-text-fill: white;"/>
+            <CheckBox fx:id="soundCheck" text="Efeitos de Som" selected="true" style="-fx-text-fill: white;"/>
+        </VBox>
+
+    </VBox>
+
+    <Label fx:id="errorLabel" style="-fx-text-fill: #ff5555;" wrapText="true"/>
+
+    <Button fx:id="startButton" text="INICIAR PARTIDA" onAction="#onStartGame"
+            maxWidth="Infinity" prefHeight="45"
+            style="-fx-background-color: #52d46a; -fx-text-fill: #121212; -fx-font-weight: bold; -fx-cursor: hand;"/>
+
+</VBox>
