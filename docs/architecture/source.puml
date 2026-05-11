@@ -1,0 +1,90 @@
+@startuml SourceStructure
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+
+title Chess Project - Source Structure
+
+folder "docs" {
+    folder "architecture" {
+        folder "packages" {
+            file "packages.puml"
+        }
+
+        file "source.puml"
+    }
+}
+
+folder "src" {
+
+    folder "main" {
+
+        folder "java" {
+
+            folder "application" {
+                file "Launcher.java"
+            }
+
+            folder "board"
+
+            folder "chess" {
+
+                folder "ai" {
+                    file "BotEngine.java"
+                    file "BotDifficulty.java"
+                    file "StockfishEngine.java"
+                    file "UCIProtocol.java"
+                }
+
+                folder "core" {
+                    file "ChessMatch.java"
+                    file "ChessPiece.java"
+                    file "Color.java"
+                }
+
+                folder "engine"
+
+                folder "game" {
+                    file "GameConfig.java"
+                    file "GameManager.java"
+                    file "GameSession.java"
+                    file "GameState.java"
+                }
+
+                folder "history"
+
+                folder "pieces"
+
+                folder "io"
+
+                folder "utils"
+            }
+
+            folder "gui" {
+
+                folder "controller" {
+                    file "GameController.java"
+                    file "GameSetupController.java"
+                }
+
+                file "ChessBoardView.java"
+                file "ImageLoader.java"
+            }
+        }
+
+        folder "resources" {
+
+            folder "assets" {
+                folder "pieces"
+            }
+
+            folder "gui" {
+                file "GameView.fxml"
+                file "style.css"
+            }
+        }
+    }
+}
+
+@enduml

@@ -92,4 +92,16 @@ public class Move {
     public void setSanAnnotation(String sanAnnotation) {
         this.sanAnnotation = sanAnnotation;
     }
+
+    public String getUciNotation() {
+        return toUci(getSource()) + toUci(getTarget());
+    }
+
+    private String toUci(Position position) {
+
+        char column = (char) ('a' + position.getColumn());
+        int row = 8 - position.getRow();
+
+        return "" + column + row;
+    }
 }

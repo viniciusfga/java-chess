@@ -3,36 +3,73 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="gui.GameController"
+            fx:controller="gui.controller.GameController"
             prefWidth="900"
             prefHeight="700"
             styleClass="root-pane">
 
     <center>
-        <GridPane fx:id="boardGrid"
-                  styleClass="board-grid"
-                  BorderPane.alignment="CENTER" />
+        <HBox alignment="CENTER" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets top="20" left="20" right="20" bottom="20"/>
+            </padding>
+            <GridPane fx:id="boardGrid" styleClass="board-grid"/>
+        </HBox>
     </center>
 
     <right>
-        <VBox spacing="15" styleClass="side-panel">
+        <VBox spacing="20" styleClass="side-panel">
             <padding>
-                <Insets top="20" right="20" bottom="20" left="20"/>
+                <Insets top="20" right="16" bottom="20" left="16"/>
             </padding>
 
-            <Label text="Sistema de Xadrez" styleClass="title-label"/>
-            <Label fx:id="turnLabel" text="Turno:" styleClass="info-label"/>
-            <Label fx:id="statusLabel" text="Status:" wrapText="true" styleClass="info-label"/>
+            <!-- Título + separador -->
+            <VBox spacing="8">
+                <Label text="Sistema de Xadrez" styleClass="title-label"/>
+                <Separator styleClass="separator"/>
+            </VBox>
 
+            <!-- Turno atual -->
+            <VBox spacing="8" alignment="CENTER_LEFT">
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <Label text="Vez de:" styleClass="turn-key-label"/>
+                    <Label fx:id="turnLabel" styleClass="turn-value-label"
+                           style="-fx-text-fill: #52d46a;"/>
+                </HBox>
+                <Label fx:id="statusLabel"
+                       text="Em andamento..."
+                       wrapText="true"
+                       styleClass="status-badge"/>
+            </VBox>
+
+            <!-- Histórico de movimentos -->
+            <VBox spacing="6" VBox.vgrow="ALWAYS">
+                <Label text="HISTÓRICO" styleClass="section-header"/>
+                <ListView fx:id="movesList"
+                          styleClass="move-list"
+                          VBox.vgrow="ALWAYS"/>
+            </VBox>
+
+            <!-- Ações -->
             <HBox spacing="10">
-                <Button text="Undo" onAction="#onUndoAction" styleClass="action-button"/>
-                <Button text="Redo" onAction="#onRedoAction" styleClass="action-button"/>
+                <Button text="Undo"
+                        onAction="#onUndoAction"
+                        styleClass="action-button"
+                        maxWidth="Infinity"
+                        HBox.hgrow="ALWAYS"/>
+                <Button text="Redo"
+                        onAction="#onRedoAction"
+                        styleClass="action-button"
+                        maxWidth="Infinity"
+                        HBox.hgrow="ALWAYS"/>
             </HBox>
         </VBox>
     </right>

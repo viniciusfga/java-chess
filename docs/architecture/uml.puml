@@ -1,0 +1,56 @@
+@startuml
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class Bishop
+class Board
+class BoardException
+class BoardInitializer
+enum BotDifficulty << enumeration >>
+interface BotEngine << interface >>
+class ChessBoardView
+class ChessException
+class ChessLog
+class ChessMatch
+class ChessPiece
+class ChessPosition
+enum Color << enumeration >>
+class FileManager
+class GameConfig
+class GameController
+class GameManager
+enum GameMode << enumeration >>
+class GameSession
+class GameSetupController
+class GameState
+class GameStateEvaluator
+class ImageLoader
+class King
+class Knight
+class Launcher
+class MainFX
+class Move
+class MoveExecutor
+class MoveHistory
+class PGNExporter
+class Pawn
+class Piece
+class Position
+class Queen
+class ReplayManager
+class Rook
+class SANGenerator
+class StockfishEngine
+class UCIProtocol
+class UI
+
+Bishop               -[#000082,plain]-^  ChessPiece
+ChessPiece           -[#000082,plain]-^  Piece
+King                 -[#000082,plain]-^  ChessPiece
+Knight               -[#000082,plain]-^  ChessPiece
+Pawn                 -[#000082,plain]-^  ChessPiece
+Queen                -[#000082,plain]-^  ChessPiece
+Rook                 -[#000082,plain]-^  ChessPiece
+StockfishEngine      -[#008200,dashed]-^  BotEngine
+@enduml

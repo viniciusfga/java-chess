@@ -1,0 +1,43 @@
+@startuml
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+skinparam packageStyle rectangle
+
+package "GUI" #LightBlue {
+  [GameController]
+  [ChessBoardView]
+}
+
+package "Game Layer" #LightGreen {
+  [GameManager]
+  [ChessMatch]
+  [MoveExecutor]
+}
+
+package "AI Integration" #LightPink {
+  [BotEngine]
+  [StockfishEngine]
+  [UCIProtocol]
+}
+
+package "Core" #LightYellow {
+  [Board]
+  [ChessPiece]
+  [Move]
+}
+
+GameController --> GameManager
+ChessBoardView --> ChessMatch
+
+GameManager --> ChessMatch
+ChessMatch --> MoveExecutor
+
+ChessMatch --> Board
+Board --> ChessPiece
+
+GameManager --> BotEngine
+StockfishEngine ..|> BotEngine
+StockfishEngine --> UCIProtocol
+
+@enduml

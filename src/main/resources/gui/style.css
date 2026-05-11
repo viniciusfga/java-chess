@@ -1,41 +1,131 @@
+/* ─── Raiz ─────────────────────────────────────────────────── */
 .root-pane {
     -fx-background-color: linear-gradient(to bottom, #111315, #1a1d21);
 }
 
-/* Área do tabuleiro */
+/* ─── Tabuleiro ─────────────────────────────────────────────── */
 .board-grid {
     -fx-background-color: #101214;
     -fx-background-radius: 14;
     -fx-padding: 18;
     -fx-alignment: center;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 22, 0.2, 0, 8);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 24, 0.25, 0, 10);
 }
 
-/* Painel lateral */
+/* ─── Painel lateral ────────────────────────────────────────── */
 .side-panel {
     -fx-background-color: #1b1f24;
     -fx-background-radius: 14;
     -fx-min-width: 280;
     -fx-pref-width: 280;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 16, 0.2, 0, 6);
 }
 
-/* Título */
+/* ─── Título ────────────────────────────────────────────────── */
 .title-label {
     -fx-text-fill: #f5f7fa;
-    -fx-font-size: 24px;
+    -fx-font-size: 20px;
     -fx-font-weight: bold;
 }
 
-/* Rótulos */
-.info-label {
-    -fx-text-fill: #c9d1d9;
-    -fx-font-size: 14px;
-    -fx-background-color: #252b31;
-    -fx-background-radius: 10;
-    -fx-padding: 10 12 10 12;
+/* ─── Separador ─────────────────────────────────────────────── */
+.separator *.line {
+    -fx-border-color: #2e343c transparent transparent transparent;
+    -fx-border-width: 1;
 }
 
-/* Botões */
+/* ─── Rótulos de info (status, "Vez de:", etc.) ─────────────── */
+.info-label {
+    -fx-text-fill: #c9d1d9;
+    -fx-font-size: 13px;
+}
+
+/* Badge de status (fundo arredondado) */
+.status-badge {
+    -fx-text-fill: #c9d1d9;
+    -fx-font-size: 13px;
+    -fx-background-color: #252b31;
+    -fx-background-radius: 8;
+    -fx-padding: 8 12 8 12;
+}
+
+/* Rótulo "Vez de:" sem fundo */
+.turn-key-label {
+    -fx-text-fill: #8b949e;
+    -fx-font-size: 13px;
+}
+
+/* Valor do turno (ex: BRANCAS) */
+.turn-value-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+/* Cabeçalho de seção em caixa alta */
+.section-header {
+    -fx-text-fill: #555d68;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+}
+
+/* ─── Lista de histórico ─────────────────────────────────────── */
+.move-list {
+    -fx-background-color: #141719;
+    -fx-background-radius: 8;
+    -fx-border-color: #2e343c;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-padding: 4;
+}
+
+.move-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #c9d1d9;
+    -fx-font-size: 12px;
+    -fx-padding: 5 10 5 10;
+    -fx-border-color: transparent;
+}
+
+.move-list .list-cell:odd {
+    -fx-background-color: #1b1f24;
+    -fx-background-radius: 5;
+}
+
+.move-list .list-cell:hover {
+    -fx-background-color: #252b31;
+    -fx-background-radius: 5;
+}
+
+.move-list .list-cell:selected {
+    -fx-background-color: #2d4a7a;
+    -fx-background-radius: 5;
+    -fx-text-fill: #ffffff;
+}
+
+/* Scrollbar da lista */
+.move-list .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 6;
+}
+
+.move-list .scroll-bar:vertical .thumb {
+    -fx-background-color: #3a424d;
+    -fx-background-radius: 4;
+}
+
+.move-list .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #4f8cff;
+}
+
+.move-list .scroll-bar:vertical .track,
+.move-list .scroll-bar:vertical .track-background,
+.move-list .scroll-bar .increment-button,
+.move-list .scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+/* ─── Botões de ação ─────────────────────────────────────────── */
 .action-button {
     -fx-background-color: linear-gradient(to bottom, #4f8cff, #3f74d8);
     -fx-text-fill: white;
@@ -44,18 +134,25 @@
     -fx-background-radius: 10;
     -fx-padding: 10 18 10 18;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.22), 10, 0.15, 0, 3);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 10, 0.15, 0, 3);
 }
 
 .action-button:hover {
     -fx-background-color: linear-gradient(to bottom, #6a9dff, #4d82e6);
+    -fx-effect: dropshadow(gaussian, rgba(79, 140, 255, 0.35), 12, 0.2, 0, 4);
 }
 
 .action-button:pressed {
     -fx-background-color: linear-gradient(to bottom, #3568c7, #2d58ab);
+    -fx-effect: none;
 }
 
-/* Casas do tabuleiro */
+.action-button:disabled {
+    -fx-opacity: 0.4;
+    -fx-cursor: default;
+}
+
+/* ─── Casas do tabuleiro ─────────────────────────────────────── */
 .square-light {
     -fx-background-color: #f0d9b5;
 }
@@ -64,7 +161,7 @@
     -fx-background-color: #b58863;
 }
 
-/* Destaques futuros */
+/* ─── Destaques ──────────────────────────────────────────────── */
 .square-selected {
     -fx-background-color: #d7c56d;
 }
@@ -75,4 +172,12 @@
 
 .square-capture-move {
     -fx-background-color: #c96b6b;
+}
+
+.square-last-move {
+    -fx-background-color: rgba(207, 186, 77, 0.55);
+}
+
+.square-check {
+    -fx-background-color: #d9534f;
 }

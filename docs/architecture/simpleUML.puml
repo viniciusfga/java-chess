@@ -1,0 +1,85 @@
+@startuml
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+package "Application" {
+    class Launcher
+    class MainFX
+}
+
+package "GUI" {
+    class GameController
+    class GameSetupController
+    class ChessBoardView
+    class ImageLoader
+}
+
+package "Game" {
+    class GameManager
+    class GameSession
+    class GameConfig
+    class GameState
+    class ReplayManager
+}
+
+package "Core" {
+    class ChessMatch
+    class Board
+    class ChessPiece
+    class Move
+    class MoveExecutor
+    class MoveHistory
+}
+
+package "Pieces" {
+    class King
+    class Queen
+    class Bishop
+    class Knight
+    class Rook
+    class Pawn
+}
+
+package "AI" {
+    interface BotEngine
+    class StockfishEngine
+    class UCIProtocol
+    enum BotDifficulty
+}
+
+package "IO" {
+    class PGNExporter
+    class FileManager
+}
+
+Launcher --> GameController
+MainFX --> GameController
+
+GameController --> GameManager
+GameController --> ChessBoardView
+
+GameManager --> GameSession
+GameManager --> ChessMatch
+
+ChessMatch *-- Board
+Board *-- ChessPiece
+
+ChessMatch --> MoveExecutor
+ChessMatch --> MoveHistory
+
+ReplayManager --> ChessLog
+
+StockfishEngine ..|> BotEngine
+StockfishEngine --> UCIProtocol
+
+King --|> ChessPiece
+Queen --|> ChessPiece
+Bishop --|> ChessPiece
+Knight --|> ChessPiece
+Rook --|> ChessPiece
+Pawn --|> ChessPiece
+
+ChessPiece --|> Piece
+
+@enduml

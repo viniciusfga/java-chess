@@ -1,0 +1,341 @@
+classDiagram
+direction BT
+class Bishop {
+  + possibleMoves() boolean[][]
+  + toString() String
+}
+class Board {
+  + removePiece(Position) Piece
+  + positionExists(Position) boolean
+  + thereIsAPiece(Position) boolean
+  + piece(int, int) Piece
+  + getRows() int
+  - positionExists(int, int) boolean
+  + getColumns() int
+  + piece(Position) Piece
+  + placePiece(Piece, Position) void
+}
+class BoardException
+class BoardInitializer {
+  - placePawnRank(Color, int) void
+  + setup() void
+  - place(char, int, ChessPiece) void
+  - placeBackRank(Color, int) void
+}
+class BotDifficulty {
+<<enumeration>>
+  + toString() String
+  + buildGoCommand() String
+  + getElo() int
+  + valueOf(String) BotDifficulty
+  + getNodes() long
+  + values() BotDifficulty[]
+  + usesEloLimit() boolean
+  + getDisplayName() String
+  + getMoveTimeMs() int
+  + getDepth() int
+  + getSkillLevel() int
+}
+class BotEngine {
+<<Interface>>
+  + setPosition(String, String) void
+  + start() void
+  + getBestMove(BotDifficulty, Color) Optional~String~
+  + getName() String
+  + stopSearch() void
+  + stop() void
+  + isReady() boolean
+}
+class ChessBoardView {
+  + createSquare(int, int, ChessPiece, boolean, boolean, boolean) StackPane
+  - createPieceImageView(ChessPiece) ImageView
+}
+class ChessException
+class ChessLog {
+  + toPgn(String, String, String, String, String) String
+  + removeLastMove() void
+  + getMoves() List~Move~
+  + getFullHistory() List~String~
+  + addMove(Move) void
+}
+class ChessMatch {
+  + getChessLog() ChessLog
+  - validateSourcePosition(Position) void
+  - newPiece(String, Color) ChessPiece
+  + redoMove() void
+  + performChessMove(ChessPosition, ChessPosition) ChessPiece
+  + undoLastMove() void
+  - isPawnPromotion(ChessPiece, Position) boolean
+  - nextTurn() void
+  + getTurn() int
+  + getLastPromotedPiece() ChessPiece
+  + replacePromotedPiece(String) ChessPiece
+  + getCheckMate() boolean
+  + getPromoted() ChessPiece
+  - validateTargetPosition(Position, Position) void
+  + possibleMoves(ChessPosition) boolean[][]
+  - undoTurn() void
+  - opponent(Color) Color
+  + getEnPassantVulnerable() ChessPiece
+  + getPieces() ChessPiece[][]
+  + getCheck() boolean
+  + getCurrentPlayer() Color
+}
+class ChessPiece {
+  # isThereOpponentPiece(Position) boolean
+  + increaseMoveCount() void
+  + getMoveCount() int
+  + getColor() Color
+  + getChessPosition() ChessPosition
+  + decreaseMoveCount() void
+}
+class ChessPosition {
+  + toString() String
+  + getColumn() char
+  + getRow() int
+  + toPosition() Position
+  + fromPosition(Position) ChessPosition
+}
+class Color {
+<<enumeration>>
+  + valueOf(String) Color
+  + values() Color[]
+}
+class FileManager {
+  + savePGN(String, String) void
+}
+class GameConfig {
+  + evE(BotDifficulty) GameConfig
+  + getHumanColor() Color
+  + getDifficulty() BotDifficulty
+  + isAllowUndo() boolean
+  + getTotalTimeSeconds() int
+  + toString() String
+  + isShowLegalMoves() boolean
+  + hasTimedGame() boolean
+  + equals(Object) boolean
+  + defaultPvP() GameConfig
+  + isBotTurn(Color) boolean
+  + pvE(Color, BotDifficulty) GameConfig
+  + isSoundEnabled() boolean
+  + getStockfishPath() String
+  + getIncrementSeconds() int
+  + getBotColor() Color?
+  + getMode() GameMode
+  + hashCode() int
+}
+class GameController {
+  - addCoordinates() void
+  - handlePromotion() void
+  - checkInitialBotMove() void
+  - scheduleBotMove() void
+  - getFriendlyPieceName(ChessPiece) String
+  - askPromotionPiece() String
+  - updateUI() void
+  - buildMoveHistory() String
+  - handleSelection(Position) void
+  - executeMove(Position) void
+  - handleSquareClick(int, int) void
+  - startBotEngine() void
+  - clearSelection() void
+  + initialize() void
+  - drawBoard() void
+  + onRedoAction() void
+  + shutdown() void
+  + setup(GameConfig) void
+  - updateMoveHistory() void
+  - applyBotMove(String) void
+  - isAllyPiece(int, int) boolean
+  + onUndoAction() void
+}
+class GameManager {
+  + performMove(ChessPosition, ChessPosition) void
+  + undo() void
+  + redo() void
+  + possibleMoves(ChessPosition) boolean[][]
+  + getPieces() ChessPiece[][]
+}
+class GameMode {
+<<enumeration>>
+  + needsBotForBlack() boolean
+  + needsBotForWhite() boolean
+  + valueOf(String) GameMode
+  + getDisplayName() String
+  + toString() String
+  + hasHumanPlayer() boolean
+  + hasAiPlayer() boolean
+  + values() GameMode[]
+}
+class GameSession
+class GameSetupController {
+  - parsePositiveInt(String, String) int
+  + initialize() void
+  - setupDifficultyCombo() void
+  - launchGame(GameConfig) void
+  - applyDefaults() void
+  - onBrowseStockfish() void
+  - clearError() void
+  - getSelectedMode() GameMode
+  - updateDifficultyDesc(BotDifficulty) void
+  - bindVisibility() void
+  - showError(String) void
+  - setVisibleAndManaged(Node, boolean) void
+  - buildConfig() GameConfig
+  - onStartGame() void
+  - parseNonNegativeInt(String, String) int
+  - updateVisibility() void
+}
+class GameState
+class GameStateEvaluator {
+  + testCheck(Color) boolean
+  - opponent(Color) Color
+  + king(Color) ChessPiece
+  + testCheckmate(Color, ChessPiece) boolean
+}
+class ImageLoader {
+  - getPieceType(ChessPiece) String
+  + getPieceImage(ChessPiece) Image
+}
+class King {
+  - testRookCastling(Position) boolean
+  + possibleMoves() boolean[][]
+  - canMove(Position) boolean
+  + toString() String
+}
+class Knight {
+  + toString() String
+  - canMove(Position) boolean
+  + possibleMoves() boolean[][]
+}
+class Launcher {
+  + main(String[]) void
+}
+class MainFX {
+  + start(Stage) void
+  + main(String[]) void
+}
+class Move {
+  + getTarget() Position
+  + isCheck() boolean
+  + getPiece() Piece
+  + isEnPassant() boolean
+  + isCastlingKingSide() boolean
+  + isCheckmate() boolean
+  + getPromotedPiece() ChessPiece
+  + getSanAnnotation() String
+  + setSanAnnotation(String) void
+  + getCapturedPiece() ChessPiece
+  + isCastlingQueenSide() boolean
+  + getSource() Position
+}
+class MoveExecutor {
+  + makeMove(Position, Position) ChessPiece
+  - moveCastlingRook(int, int, int, boolean) void
+  - captureEnPassantPawn(Color, Position) ChessPiece
+  + undoMove(Position, Position, ChessPiece, ChessPiece) void
+}
+class MoveHistory {
+  + push(Move) void
+  + undo() Move
+  + redo() Move
+}
+class PGNExporter {
+  + export(ChessMatch, String, String, String) String
+}
+class Pawn {
+  + toString() String
+  + possibleMoves() boolean[][]
+}
+class Piece {
+  # getBoard() Board
+  + possibleMoves() boolean[][]
+  + possibleMove(Position) boolean
+  + isThereAnyPossibleMove() boolean
+}
+class Position {
+  + setValues(int, int) void
+  + getColumn() int
+  + toString() String
+  + getRow() int
+  + setRow(int) void
+  + setColumn(int) void
+}
+class Queen {
+  + toString() String
+  + possibleMoves() boolean[][]
+}
+class ReplayManager {
+  - pause() void
+  + replay(List~Move~) void
+}
+class Rook {
+  + possibleMoves() boolean[][]
+  + toString() String
+}
+class SANGenerator {
+  - toSquare(Position) String
+  - pieceLetter(ChessPiece) String
+  + generateSan(ChessMatch, ChessPiece, Position, Position, ChessPiece, ChessPiece, boolean, boolean, boolean, boolean, boolean) String
+  + generateSan(ChessMatch, Move) String
+  - disambiguation(ChessMatch, ChessPiece, Position, Position) String
+  - appendCheckSuffix(String, boolean, boolean) String
+}
+class StockfishEngine {
+  - startReaderThread() void
+  + isReady() boolean
+  - validateExecutable() void
+  - sendCommand(String) void
+  + stopSearch() void
+  - closeStreams() void
+  + getBestMove(BotDifficulty, Color) Optional~String~
+  + getName() String
+  + start() void
+  - waitForReady() boolean
+  + stop() void
+  - ensureRunning() void
+  + setPosition(String, String) void
+  - waitForLine(String, long) void
+  - performUciHandshake() void
+  - waitForBestMove(long) Optional~String~
+}
+class UCIProtocol {
+  + parseScoreCp(String) int
+  + isReady() String
+  + go(BotDifficulty) String
+  + goWithClock(long, long, long, long) String
+  + parseDepth(String) int
+  + parsePV(String) List~String~
+  + parseMateIn(String) Optional~Integer~
+  + uci() String
+  + quit() String
+  + stop() String
+  + applyDifficulty(BotDifficulty) List~String~
+  + setOption(String, Object) String
+  + isBestMoveLine(String) boolean
+  + isValidUciMove(String) boolean
+  + parsePonder(String) Optional~String~
+  + parseBestMove(String) Optional~String~
+  + isUciOk(String) boolean
+  + uciNewGame() String
+  + position(String, String) String
+  + isReadyOk(String) boolean
+}
+class UI {
+  + readChessPosition(Scanner) ChessPosition
+  + clearScreen() void
+  + printBoard(ChessPiece[][], boolean[][]) void
+  + printMoves(ChessLog) void
+  + printBoard(ChessPiece[][]) void
+  - printPiece(ChessPiece, boolean) void
+  - printCapturedPieces(List~ChessPiece~) void
+  + printMatch(ChessMatch, List~ChessPiece~) void
+}
+
+Bishop  -->  ChessPiece
+ChessPiece  -->  Piece
+King  -->  ChessPiece
+Knight  -->  ChessPiece
+Pawn  -->  ChessPiece
+Queen  -->  ChessPiece
+Rook  -->  ChessPiece
+StockfishEngine  ..>  BotEngine

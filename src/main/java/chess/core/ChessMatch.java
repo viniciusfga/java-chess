@@ -126,6 +126,7 @@ public class ChessMatch {
                 castlingKingSide, castlingQueenSide, enPassant, check, checkmate);
 
         history.push(move);
+        chessLog.addMove(move);
 
         return capturedPiece;
     }

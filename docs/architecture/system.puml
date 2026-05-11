@@ -1,0 +1,20 @@
+@startuml
+
+package "GUI" #LightBlue {
+  [JavaFX GUI]
+}
+
+package "Domain" #LightGreen {
+  [Game Manager]
+  [Chess Engine]
+}
+
+package "AI" #LightPink {
+  [Stockfish Adapter]
+}
+
+[JavaFX GUI] --> [Game Manager]
+[Game Manager] --> [Chess Engine]
+[Chess Engine] --> [Stockfish Adapter]
+
+@enduml
