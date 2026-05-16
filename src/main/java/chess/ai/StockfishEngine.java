@@ -7,7 +7,11 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,6 +26,7 @@ public class StockfishEngine implements BotEngine {
     private static final int UCI_TIMEOUT_MS    = 3_000;
 
     private final BlockingQueue<String> outputQueue = new LinkedBlockingQueue<>();
+    private final Random random = new Random();
     private final String executablePath;
 
     private Process        process;
@@ -49,8 +54,13 @@ public class StockfishEngine implements BotEngine {
         writer = new PrintWriter(process.getOutputStream(), true);
         reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
-        startReaderThread();
-        performUciHandshake();
+        try {
+            startReaderThread();
+            performUciHandshake();
+        } catch (IOException e) {
+            stop();
+            throw e;
+        }
     }
 
     @Override
@@ -74,7 +84,13 @@ public class StockfishEngine implements BotEngine {
     }
 
     @Override
-    public boolean isReady() { return running && ready; }
+    public boolean isReady() {
+        if (!running || !ready || process == null || !process.isAlive()) {
+            return false;
+        }
+
+        return waitForReady();
+    }
 
     @Override
     public void setPosition(String fen, String moves) {
@@ -168,6 +184,118 @@ public class StockfishEngine implements BotEngine {
         } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
         return Optional.empty();
     }
+
+    private Optional<String> waitForHeuristicMove(long timeoutMs, BotDifficulty difficulty) {
+        long deadline = System.currentTimeMillis() + timeoutMs;
+        List<CandidateMove> candidates = new ArrayList<>();
+        Optional<String> bestMove = Optional.empty();
+
+        try {
+            while (System.currentTimeMillis() < deadline) {
+                String line = outputQueue.poll(deadline - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+
+                if (line == null) {
+                    continue;
+                }
+
+                parseCandidateMove(line).ifPresent(candidate -> {
+                    candidates.removeIf(existing -> existing.multiPv == candidate.multiPv);
+                    candidates.add(candidate);
+                });
+
+                if (UCIProtocol.isBestMoveLine(line)) {
+                    bestMove = UCIProtocol.parseBestMove(line);
+                    break;
+                }
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        if (bestMove.isEmpty()) {
+            return Optional.empty();
+        }
+
+        if (candidates.isEmpty() || difficulty.getCandidateMoves() <= 1) {
+            return bestMove;
+        }
+
+        return Optional.of(selectMoveByDifficulty(candidates, bestMove.get(), difficulty));
+    }
+
+    private Optional<CandidateMove> parseCandidateMove(String line) {
+        if (line == null || !line.startsWith("info ") || !line.contains(" pv ")) {
+            return Optional.empty();
+        }
+
+        String[] tokens = line.split("\\s+");
+
+        int multiPv = 1;
+        int score = 0;
+        String move = null;
+
+        for (int i = 0; i < tokens.length; i++) {
+            if ("multipv".equals(tokens[i]) && i + 1 < tokens.length) {
+                multiPv = parseIntOrDefault(tokens[i + 1], 1);
+            }
+
+            if ("score".equals(tokens[i]) && i + 2 < tokens.length) {
+                score = parseScore(tokens[i + 1], tokens[i + 2]);
+            }
+
+            if ("pv".equals(tokens[i]) && i + 1 < tokens.length) {
+                move = tokens[i + 1];
+                break;
+            }
+        }
+
+        if (move == null || move.isBlank()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(new CandidateMove(move, multiPv, score));
+    }
+
+    private int parseScore(String type, String value) {
+        int parsed = parseIntOrDefault(value, 0);
+
+        if ("mate".equals(type)) {
+            return parsed > 0 ? 100_000 - parsed : -100_000 - parsed;
+        }
+
+        return parsed;
+    }
+
+    private int parseIntOrDefault(String value, int fallback) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return fallback;
+        }
+    }
+
+    private String selectMoveByDifficulty(List<CandidateMove> candidates, String stockfishBestMove, BotDifficulty difficulty) {
+        candidates.sort(Comparator.comparingInt(CandidateMove::multiPv));
+
+        if (random.nextDouble() > difficulty.getMistakeChance()) {
+            return stockfishBestMove;
+        }
+
+        List<CandidateMove> weakerMoves = candidates.stream()
+                .filter(candidate -> !candidate.move.equals(stockfishBestMove))
+                .toList();
+
+        if (weakerMoves.isEmpty()) {
+            return stockfishBestMove;
+        }
+
+        int maxIndex = Math.min(weakerMoves.size(), Math.max(1, difficulty.getCandidateMoves() - 1));
+        int selectedIndex = random.nextInt(maxIndex);
+
+        return weakerMoves.get(selectedIndex).move;
+    }
+
+    private record CandidateMove(String move, int multiPv, int score) { }
 
     private void sendCommand(String command) {
         if (writer != null) writer.println(command);

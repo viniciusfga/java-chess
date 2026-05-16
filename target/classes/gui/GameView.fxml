@@ -88,6 +88,11 @@
                         maxWidth="Infinity"
                         HBox.hgrow="ALWAYS"/>
             </HBox>
+
+            <Button text="Voltar"
+                    onAction="#onBackToSetupAction"
+                    styleClass="action-button"
+                    maxWidth="Infinity"/>
         </VBox>
     </right>
 

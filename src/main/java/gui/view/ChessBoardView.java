@@ -1,6 +1,7 @@
-package gui;
+package gui.view;
 
 import chess.core.ChessPiece;
+import gui.util.ImageLoader;
 import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -9,15 +10,19 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
-import java.net.URL;
-
 public class ChessBoardView {
 
-    private static final int    SQUARE_SIZE  = 80;
-    private static final double PIECE_SIZE   = SQUARE_SIZE * 0.90;
+    private static final int SQUARE_SIZE = 80;
+    private static final double PIECE_SIZE = SQUARE_SIZE * 0.90;
+
+    private final ImageLoader imageLoader = new ImageLoader();
+
+    public static int getSquareSize() {
+        return SQUARE_SIZE;
+    }
 
     // Raio do círculo de movimento vazio
-    private static final double DOT_RADIUS     = SQUARE_SIZE * 0.18;
+    private static final double DOT_RADIUS = SQUARE_SIZE * 0.18;
     // Raio do anel de captura (cobre quase a casa inteira)
     private static final double CAPTURE_RADIUS = SQUARE_SIZE * 0.46;
     private static final double CAPTURE_STROKE = SQUARE_SIZE * 0.07;
@@ -73,18 +78,9 @@ public class ChessBoardView {
         return square;
     }
 
-    private ImageView createPieceImageView(ChessPiece piece) {
-        String color = piece.getColor().toString();
-        String type  = piece.getClass().getSimpleName();
-        String path  = "/assets/pieces/" + color + "_" + type + ".png";
+    public ImageView createPieceImageView(ChessPiece piece) {
+        Image image = imageLoader.getPieceImage(piece);
 
-        URL imageUrl = getClass().getResource(path);
-        if (imageUrl == null) {
-            System.err.println("Imagem não encontrada: " + path);
-            return new ImageView();
-        }
-
-        Image image = new Image(imageUrl.toExternalForm());
         ImageView iv = new ImageView(image);
         iv.setFitWidth(PIECE_SIZE);
         iv.setFitHeight(PIECE_SIZE);

@@ -47,7 +47,7 @@ public interface BotEngine {
     Optional<String> getBestMove(BotDifficulty difficulty, Color color);
 
     /**
-     * Interrompe uma busca em andamento (útil para tempo limite externo).
+     * Interrompe a busca atual, se houver uma em andamento.
      */
     void stopSearch();
 

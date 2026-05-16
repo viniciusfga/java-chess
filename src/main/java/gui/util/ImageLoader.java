@@ -1,7 +1,6 @@
-package gui;
+package gui.util;
 
 import chess.core.ChessPiece;
-import chess.pieces.*;
 import javafx.scene.image.Image;
 
 import java.io.InputStream;
@@ -28,18 +27,5 @@ public class ImageLoader {
         }
 
         return new Image(stream);
-    }
-
-    private String getPieceType(ChessPiece piece) {
-        if (piece instanceof King) return "king";
-        if (piece instanceof Queen) return "queen";
-        if (piece instanceof Rook) return "rook";
-        if (piece instanceof Bishop) return "bishop";
-        if (piece instanceof Knight) return "knight";
-        if (piece instanceof Pawn) return "pawn";
-
-        throw new IllegalArgumentException(
-                "Tipo de peça não reconhecido: " + piece.getClass().getSimpleName()
-        );
     }
 }

@@ -25,6 +25,7 @@ public final class UCIProtocol {
         cmds.add(setOption("UCI_LimitStrength", diff.usesEloLimit()));
         if (diff.usesEloLimit()) cmds.add(setOption("UCI_Elo", diff.getElo()));
         cmds.add(setOption("Skill Level", diff.getSkillLevel()));
+        cmds.add(setOption("MultiPV", diff.getCandidateMoves()));
         return cmds;
     }
 

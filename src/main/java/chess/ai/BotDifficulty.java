@@ -1,5 +1,7 @@
 package chess.ai;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Mapeamento de níveis de dificuldade para parâmetros UCI do Stockfish.
  *
@@ -20,11 +22,13 @@ public enum BotDifficulty {
     // ── Nível 1 – Iniciante ─────────────────────────────────────────────────
     BEGINNER(
             "Iniciante",
-            800,
+            400,
             0,
-            500,
+            100,
+            1,
+            50,
             5,
-            -1
+            0.70
     ),
 
     // ── Nível 2 – Fácil ─────────────────────────────────────────────────────
@@ -34,7 +38,9 @@ public enum BotDifficulty {
             5,
             1_000,
             8,
-            -1
+            -1,
+            4,
+            0.45
     ),
 
     // ── Nível 3 – Médio ─────────────────────────────────────────────────────
@@ -44,7 +50,9 @@ public enum BotDifficulty {
             10,
             2_000,
             12,
-            -1
+            -1,
+            3,
+            0.20
     ),
 
     // ── Nível 4 – Difícil ───────────────────────────────────────────────────
@@ -54,7 +62,9 @@ public enum BotDifficulty {
             15,
             3_000,
             16,
-            -1
+            -1,
+            2,
+            0.08
     ),
 
     // ── Nível 5 – Expert ────────────────────────────────────────────────────
@@ -64,7 +74,9 @@ public enum BotDifficulty {
             20,
             5_000,
             20,
-            -1
+            -1,
+            1,
+            0.0
     ),
 
     // ── Nível 6 – Máximo (Stockfish sem limitações) ─────────────────────────
@@ -74,21 +86,31 @@ public enum BotDifficulty {
             20,
             10_000,
             -1,
-            -1
+            -1,
+            1,
+            0.0
     );
 
     // ────────────────────────────────────────────────────────────────────────
 
-    /** Rótulo exibido na interface. */
+    /**
+     * Rótulo exibido na interface.
+     */
     private final String displayName;
 
-    /** Rating UCI_Elo alvo. */
+    /**
+     * Rating UCI_Elo alvo.
+     */
     private final int elo;
 
-    /** Parâmetro "Skill Level" do Stockfish (0-20). */
+    /**
+     * Parâmetro "Skill Level" do Stockfish (0-20).
+     */
     private final int skillLevel;
 
-    /** Tempo máximo de busca por lance (ms). */
+    /**
+     * Tempo máximo de busca por lance (ms).
+     */
     private final int moveTimeMs;
 
     /**
@@ -103,43 +125,87 @@ public enum BotDifficulty {
      */
     private final long nodes;
 
+    /**
+     * Quantidade de lances candidatos analisados via MultiPV.
+     */
+    private final int candidateMoves;
+
+    /**
+     * Chance de escolher um lance inferior ao melhor. Valor entre 0.0 e 1.0.
+     */
+    private final double mistakeChance;
+
     // ────────────────────────────────────────────────────────────────────────
 
     BotDifficulty(String displayName, int elo, int skillLevel,
-                  int moveTimeMs, int depth, long nodes) {
+                  int moveTimeMs, int depth, long nodes,
+                  int candidateMoves, double mistakeChance) {
         this.displayName = displayName;
-        this.elo         = elo;
-        this.skillLevel  = skillLevel;
-        this.moveTimeMs  = moveTimeMs;
-        this.depth       = depth;
-        this.nodes       = nodes;
+        this.elo = elo;
+        this.skillLevel = skillLevel;
+        this.moveTimeMs = moveTimeMs;
+        this.depth = depth;
+        this.nodes = nodes;
+        this.candidateMoves = candidateMoves;
+        this.mistakeChance = mistakeChance;
     }
 
     // ── Getters ─────────────────────────────────────────────────────────────
 
-    public String getDisplayName() { return displayName; }
-    public int    getElo()         { return elo; }
-    public int    getSkillLevel()  { return skillLevel; }
-    public int    getMoveTimeMs()  { return moveTimeMs; }
-    public int    getDepth()       { return depth; }
-    public long   getNodes()       { return nodes; }
+    public String getDisplayName() {
+        return displayName;
+    }
 
-    /** True quando o nível deve limitar o engine via UCI_Elo/UCI_LimitStrength. */
+    public int getElo() {
+        return elo;
+    }
+
+    public int getSkillLevel() {
+        return skillLevel;
+    }
+
+    public int getMoveTimeMs() {
+        return moveTimeMs;
+    }
+
+    public int getDepth() {
+        return depth;
+    }
+
+    public long getNodes() {
+        return nodes;
+    }
+
+    public int getCandidateMoves() {
+        return candidateMoves;
+    }
+
+    public double getMistakeChance() {
+        return mistakeChance;
+    }
+
+    /**
+     * Indica se o Stockfish deve limitar força por Elo.
+     * No modo máximo, o engine joga sem limitação artificial.
+     */
     public boolean usesEloLimit() {
         return this != MAXIMUM;
     }
 
     /**
-     * Monta a parte do comando "go" com os parâmetros de busca.
-     * Exemplo de saída: "go movetime 2000 depth 12"
+     * Monta o comando UCI "go" conforme os limites configurados.
      */
-    public String buildGoCommand() {
-        StringBuilder sb = new StringBuilder("go movetime ").append(moveTimeMs);
-        if (depth > 0)  sb.append(" depth ").append(depth);
-        if (nodes > 0)  sb.append(" nodes ").append(nodes);
-        return sb.toString();
+    public @NotNull String buildGoCommand() {
+        StringBuilder command = new StringBuilder("go");
+        if (moveTimeMs > 0) {
+            command.append(" movetime ").append(moveTimeMs);
+        }
+        if (depth > 0) {
+            command.append(" depth ").append(depth);
+        }
+        if (nodes > 0) {
+            command.append(" nodes ").append(nodes);
+        }
+        return command.toString();
     }
-
-    @Override
-    public String toString() { return displayName; }
 }

@@ -32,7 +32,7 @@ src/
     │   │   │   └── Color.java
     │   │   ├── engine/                     # Regras de execução e validação
     │   │   ├── game/                       # Regras de Sessão
-    │   │   │   ├── GameConfig              
+    │   │   │   ├── GameConfig.java              
     │   │   │   ├── GameManager.java 
     │   │   │   ├── GameMode.java   
     │   │   │   ├── GameSession.java           
@@ -42,6 +42,7 @@ src/
     │   │   ├── pieces/                     # Implementação de cada peça
     │   │   ├── io/                         # PGN, FileManagers
     │   │   ├── service/  
+    │   │   │   ├── BotMoveService    
     │   │   │   ├── EngineGameService              
     │   │   │   └── MoveHistorySerializer.java 
     │   │   │   
@@ -50,7 +51,15 @@ src/
     │   └── gui/                            # Camada Visual (JavaFX)
     │       ├── controller/
     │       │    ├── GameController.java        # Controlador da partida
-    │       │    └── GameSetupController.java   # Controlador da tela de opções     
+    │       │    └── GameSetupController.java   # Controlador da tela de opções
+    │       │  
+    │       ├── service/    
+    │       │    ├── GameClockController.java   
+    │       │    ├── MoveHistoryFormatter.java   
+    │       │    ├── MoveSoundsService.java   
+    │       │    ├── NavigationService.java  
+    │       │    └── PieceAnimator.java  
+    │       │       
     │       ├── ChessBoardView.java             # Renderização do grid
     │       └── ImageLoader.java                # Cache de asset
     └──resources/
