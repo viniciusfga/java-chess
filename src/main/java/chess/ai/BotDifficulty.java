@@ -22,9 +22,9 @@ public enum BotDifficulty {
     // ── Nível 1 – Iniciante ─────────────────────────────────────────────────
     BEGINNER(
             "Iniciante",
-            400,
+            20,
             0,
-            100,
+            150,
             1,
             50,
             5,
@@ -34,9 +34,9 @@ public enum BotDifficulty {
     // ── Nível 2 – Fácil ─────────────────────────────────────────────────────
     EASY(
             "Fácil",
-            1100,
+            40,
             5,
-            1_000,
+            400,
             8,
             -1,
             4,
@@ -46,9 +46,9 @@ public enum BotDifficulty {
     // ── Nível 3 – Médio ─────────────────────────────────────────────────────
     MEDIUM(
             "Médio",
-            1500,
+            80,
             10,
-            2_000,
+            900,
             12,
             -1,
             3,
@@ -58,9 +58,9 @@ public enum BotDifficulty {
     // ── Nível 4 – Difícil ───────────────────────────────────────────────────
     HARD(
             "Difícil",
-            1900,
+            200,
             15,
-            3_000,
+            1800,
             16,
             -1,
             2,
@@ -70,9 +70,9 @@ public enum BotDifficulty {
     // ── Nível 5 – Expert ────────────────────────────────────────────────────
     EXPERT(
             "Expert",
-            2400,
+            1000,
             20,
-            5_000,
+            3500,
             20,
             -1,
             1,
@@ -84,7 +84,7 @@ public enum BotDifficulty {
             "Máximo",
             3190,   // teto do UCI_Elo do Stockfish 16+
             20,
-            10_000,
+            3500,
             -1,
             -1,
             1,
@@ -196,16 +196,31 @@ public enum BotDifficulty {
      * Monta o comando UCI "go" conforme os limites configurados.
      */
     public @NotNull String buildGoCommand() {
+
         StringBuilder command = new StringBuilder("go");
+
+        boolean hasLimit = false;
+
         if (moveTimeMs > 0) {
             command.append(" movetime ").append(moveTimeMs);
+            hasLimit = true;
         }
+
         if (depth > 0) {
             command.append(" depth ").append(depth);
+            hasLimit = true;
         }
+
         if (nodes > 0) {
             command.append(" nodes ").append(nodes);
+            hasLimit = true;
         }
+
+        // fallback de segurança
+        if (!hasLimit) {
+            command.append(" movetime 1000");
+        }
+
         return command.toString();
     }
 }

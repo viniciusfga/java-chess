@@ -12,15 +12,24 @@ public class GameClockController {
     private Timeline gameClock;
 
     public void start(GameSession session, Runnable onTick) {
+
+        if (session == null || !session.getConfig().hasTimedGame()) {
+            return;
+        }
+
         stop();
+
         gameClock = new Timeline(
                 new KeyFrame(Duration.seconds(1), e -> {
-                    if (session != null && session.getCurrentState() == GameState.RUNNING) {
+
+                    if (session.getCurrentState() == GameState.RUNNING) {
                         session.updateClock();
                         onTick.run();
                     }
+
                 })
         );
+
         gameClock.setCycleCount(Animation.INDEFINITE);
         gameClock.play();
     }

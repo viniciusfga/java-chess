@@ -90,7 +90,12 @@ public class GameController {
         clearSelection();
         this.session.start();
 
-        this.clockController.start(session, this::updateTimerUI);
+        if (config.hasTimedGame()) {
+            this.clockController.start(session, this::updateTimerUI);
+        } else {
+            whiteTimeLabel.setText("--:--");
+            blackTimeLabel.setText("--:--");
+        }
 
         if (engine != null) {
             try {

@@ -12,6 +12,7 @@ public class GameSession {
 
     private final String sessionId;
     private final GameManager gameManager;
+    private final GameConfig config;
     private final Instant startTime;
 
     private GameState currentState;
@@ -22,12 +23,17 @@ public class GameSession {
     public GameSession(GameManager gameManager, GameConfig config) {
         this.sessionId = UUID.randomUUID().toString().substring(0, 8);
         this.gameManager = gameManager;
+        this.config = config;
         this.startTime = Instant.now();
         this.currentState = GameState.CREATED;
 
-        // Inicializa relógios com base na configuração
-        this.whiteRemainingTime = Duration.ofMinutes(config.getTimeControlMinutes());
-        this.blackRemainingTime = Duration.ofMinutes(config.getTimeControlMinutes());
+        if (config.hasTimedGame()) {
+            this.whiteRemainingTime = Duration.ofSeconds(config.getTotalTimeSeconds());
+            this.blackRemainingTime = Duration.ofSeconds(config.getTotalTimeSeconds());
+        } else {
+            this.whiteRemainingTime = Duration.ZERO;
+            this.blackRemainingTime = Duration.ZERO;
+        }
     }
 
     /**
@@ -68,6 +74,9 @@ public class GameSession {
     }
 
     // --- Getters & Setters ---
+    public GameConfig getConfig() {
+        return config;
+    }
 
     public String getSessionId() { return sessionId; }
     public GameManager getManager() { return gameManager; }

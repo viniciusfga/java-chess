@@ -3,14 +3,15 @@
 ```text
 docs/                       # Documentação, diagramas e materiais auxiliares
 └── architecture/
-     ├── packages/
-     └── source.java 
+     ├── Project_Struture.java 
+     └── classDiagram.java 
     
 src/
 └── main/
     ├── java/
     │   ├── application/
-    │   │   └── Launcher.java               # Main que chama o JavaFX
+    │   │   ├── Launcher.java               # Main que chama o JavaFX
+    │   │   └── MainFx.java               
     │   │  
     │   ├── board/                          # Estrutura agnóstica de tabuleiro (Matrix)
     │   │   ├── Board.java         
@@ -46,9 +47,15 @@ src/
     │   │   │   ├── EngineGameService              
     │   │   │   └── MoveHistorySerializer.java 
     │   │   │   
-    │   │   └── utils/                      # SANGenerator
+    │   │   ├── utils/                      # SANGenerator
+    │   │   │ 
+    │   │   └── ChessException.java  
+    │   │
     │   │
     │   └── gui/                            # Camada Visual (JavaFX)
+    │       ├── audio/
+    │       │    └── SoundManager.java        
+    │       │   
     │       ├── controller/
     │       │    ├── GameController.java        # Controlador da partida
     │       │    └── GameSetupController.java   # Controlador da tela de opções
@@ -59,11 +66,19 @@ src/
     │       │    ├── MoveSoundsService.java   
     │       │    ├── NavigationService.java  
     │       │    └── PieceAnimator.java  
-    │       │       
-    │       ├── ChessBoardView.java             # Renderização do grid
-    │       └── ImageLoader.java                # Cache de asset
+    │       │      
+    │       ├── util/
+    │       │    └── ImageLoader.java                
+    │       │
+    │       └── view/
+    │            └── ChessBoardView.java              
+    │
     └──resources/
-        ├──assets.pieces
+        ├──assets
+        │    ├── pieces/
+        │    └── sounds/
         └── gui/ 
-            ├──GameView.fxml
-            └──style
+            ├── GameSetupView.fxml
+            ├── GameView.fxml
+            ├── style.css
+            └── theme.css
